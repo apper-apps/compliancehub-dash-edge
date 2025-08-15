@@ -624,9 +624,9 @@ return (
                   />
                   {filteredServices.length > 4 && (
                     <div className="mt-4 text-center">
-                      <button 
+<button 
                         onClick={() => window.location.href = '/services'}
-                        className="text-blue-600 hover:text-blue-800 font-medium"
+                        className="text-blue-600 hover:text-blue-800 font-medium hover:bg-blue-50 px-3 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-md"
                       >
                         View all {filteredServices.length} services →
                       </button>

@@ -19,25 +19,28 @@ const Sidebar = ({ isOpen, onClose }) => {
     const isActive = location.pathname === item.href;
     
     return (
-      <NavLink
+<NavLink
         to={item.href}
         className={cn(
-          "flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200",
+          "flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 group relative overflow-hidden",
           isActive
-            ? "bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md"
-            : "text-gray-700 hover:bg-red-50 hover:text-red-600"
+            ? "bg-gradient-to-r from-red-500 via-red-600 to-red-700 text-white shadow-lg shadow-red-500/25 transform scale-105"
+            : "text-gray-700 hover:bg-gradient-to-r hover:from-red-50 hover:via-pink-50 hover:to-red-100 hover:text-red-700 hover:shadow-md hover:transform hover:scale-102"
         )}
         onClick={() => onClose && onClose()}
       >
-        <ApperIcon name={item.icon} className="w-5 h-5 mr-3" />
-        {item.name}
+        <ApperIcon name={item.icon} className={cn("w-5 h-5 mr-3 transition-transform duration-200", isActive ? "text-white" : "group-hover:scale-110")} />
+        <span className="font-medium">{item.name}</span>
+        {isActive && (
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse" />
+        )}
       </NavLink>
     );
   };
 
   // Desktop Sidebar
   const DesktopSidebar = () => (
-    <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:border-r lg:border-gray-200 lg:bg-white lg:pt-5">
+<div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:border-r lg:border-gray-200/50 lg:bg-white/80 lg:backdrop-blur-md lg:pt-5 lg:shadow-lg">
       <div className="flex flex-col flex-1 min-h-0 px-4">
         <nav className="flex-1 space-y-2 pb-4">
           {navigation.map((item) => (

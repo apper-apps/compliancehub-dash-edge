@@ -13,13 +13,13 @@ const Header = ({ onSearch, onToggleMobileMenu, totalPendingRequests = 0 }) => {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+<header className="bg-white/80 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-40 shadow-sm">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Mobile menu button */}
-          <button
+<button
             onClick={onToggleMobileMenu}
-            className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="lg:hidden p-3 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200 transform hover:scale-105"
           >
             <ApperIcon name="Menu" className="w-6 h-6" />
           </button>
@@ -51,13 +51,13 @@ const Header = ({ onSearch, onToggleMobileMenu, totalPendingRequests = 0 }) => {
           {/* Right side actions */}
           <div className="flex items-center space-x-4">
             {/* Mobile search button */}
-            <button className="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
+<button className="md:hidden p-3 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 transform hover:scale-105">
               <ApperIcon name="Search" className="w-5 h-5" />
             </button>
 
             {/* Notifications */}
-            <div className="relative">
-              <button className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500">
+<div className="relative">
+              <button className="p-3 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gradient-to-r hover:from-yellow-50 hover:to-orange-50 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200 transform hover:scale-105">
                 <ApperIcon name="Bell" className="w-6 h-6" />
                 {totalPendingRequests > 0 && (
                   <motion.div
@@ -65,7 +65,7 @@ const Header = ({ onSearch, onToggleMobileMenu, totalPendingRequests = 0 }) => {
                     animate={{ scale: 1 }}
                     className="absolute -top-1 -right-1"
                   >
-                    <Badge variant="red" className="px-1.5 py-0.5 text-xs min-w-[1.25rem] text-center">
+                    <Badge variant="red" className="px-2 py-1 text-xs min-w-[1.5rem] text-center shadow-lg ring-2 ring-white">
                       {totalPendingRequests > 99 ? "99+" : totalPendingRequests}
                     </Badge>
                   </motion.div>
@@ -74,12 +74,12 @@ const Header = ({ onSearch, onToggleMobileMenu, totalPendingRequests = 0 }) => {
             </div>
 
             {/* Settings */}
-            <button className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500">
+<button className="p-3 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-violet-50 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200 transform hover:scale-105">
               <ApperIcon name="Settings" className="w-6 h-6" />
             </button>
 
             {/* Help */}
-            <button className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500">
+<button className="p-3 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200 transform hover:scale-105">
               <ApperIcon name="HelpCircle" className="w-6 h-6" />
             </button>
           </div>
