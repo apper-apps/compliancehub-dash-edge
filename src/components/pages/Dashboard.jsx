@@ -18,7 +18,6 @@ import Button from "@/components/atoms/Button";
 import Badge from "@/components/atoms/Badge";
 import ServiceCard from "@/components/molecules/ServiceCard";
 const Dashboard = () => {
-const Dashboard = () => {
 const [services, setServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -428,9 +427,8 @@ const handleClearFilters = () => {
     setSearchTerm("");
   };
 
-  // Get favorite services
+// Get favorite services
   const favoriteServices = services.filter(service => favorites.includes(service.Id));
-const favoriteServices = services.filter(service => favorites.includes(service.Id));
 
 const totalPendingRequests = stats.totalRequests;
 return (
