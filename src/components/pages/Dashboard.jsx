@@ -4,6 +4,7 @@ import { servicesService } from "@/services/api/servicesService";
 import { analyticsService } from "@/services/api/analyticsService";
 import { messagingService } from "@/services/api/messagingService";
 import { toast } from "react-toastify";
+import { formatDistanceToNow } from "date-fns";
 import StatsOverview from "@/components/organisms/StatsOverview";
 import AnalyticsCharts from "@/components/organisms/AnalyticsCharts";
 import MessagingPanel from "@/components/organisms/MessagingPanel";
@@ -12,6 +13,9 @@ import ServiceGrid from "@/components/organisms/ServiceGrid";
 import Layout from "@/components/organisms/Layout";
 import FilterPanel from "@/components/molecules/FilterPanel";
 import SearchBar from "@/components/molecules/SearchBar";
+import ApperIcon from "@/components/ApperIcon";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
 const Dashboard = () => {
 const [services, setServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
@@ -50,7 +54,7 @@ const [services, setServices] = useState([]);
     loading: true
   });
 
-  // Legacy stats for compatibility
+// Legacy stats for compatibility
   const [stats, setStats] = useState({
     totalRequests: 0,
     pendingRequests: 0,
@@ -58,6 +62,72 @@ const [services, setServices] = useState([]);
     averageProcessingTime: 0,
     activeServices: 0
   });
+
+  // Quick Actions data
+  const quickActions = [
+    {
+      id: 1,
+      title: "Add Product",
+      icon: "Plus",
+      color: "bg-gradient-to-br from-blue-500 to-blue-600",
+      hoverColor: "hover:from-blue-600 hover:to-blue-700"
+    },
+    {
+      id: 2,
+      title: "Generate Invoice",
+      icon: "FileText",
+      color: "bg-gradient-to-br from-green-500 to-green-600",
+      hoverColor: "hover:from-green-600 hover:to-green-700"
+    },
+    {
+      id: 3,
+      title: "Send Notification",
+      icon: "Bell",
+      color: "bg-gradient-to-br from-purple-500 to-purple-600",
+      hoverColor: "hover:from-purple-600 hover:to-purple-700"
+    },
+    {
+      id: 4,
+      title: "Export Report",
+      icon: "Download",
+      color: "bg-gradient-to-br from-orange-500 to-orange-600",
+      hoverColor: "hover:from-orange-600 hover:to-orange-700"
+    }
+  ];
+
+  // Tasks & Calendar data
+  const upcomingTasks = [
+    {
+      id: 1,
+      title: "Review compliance audit",
+      dueDate: new Date(Date.now() + 2 * 60 * 1000), // 2 minutes from now
+      priority: "High"
+    },
+    {
+      id: 2,
+      title: "Update service documentation",
+      dueDate: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes from now
+      priority: "Medium"
+    },
+    {
+      id: 3,
+      title: "Schedule team meeting",
+      dueDate: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
+      priority: "Low"
+    },
+    {
+      id: 4,
+      title: "Process pending requests",
+      dueDate: new Date(Date.now() + 4 * 60 * 60 * 1000), // 4 hours from now
+      priority: "High"
+    },
+    {
+      id: 5,
+      title: "Generate monthly reports",
+      dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day from now
+      priority: "Medium"
+    }
+  ];
   // Load stats data
 const loadKpiStats = async () => {
     try {
@@ -160,7 +230,40 @@ const loadKpiStats = async () => {
       });
     } catch (error) {
       console.error("Error loading stats:", error);
-      // Keep default stats values on error
+// Keep default stats values on error
+    }
+  };
+
+  // Quick Actions handlers
+  const handleQuickAction = (actionTitle) => {
+    switch (actionTitle) {
+      case "Add Product":
+        toast.success("Add Product feature initiated");
+        break;
+      case "Generate Invoice":
+        toast.success("Invoice generation started");
+        break;
+      case "Send Notification":
+        toast.success("Notification sent successfully");
+        break;
+      case "Export Report":
+        toast.success("Report export initiated");
+        break;
+      default:
+        toast.info(`${actionTitle} action triggered`);
+    }
+  };
+
+  const getPriorityBadgeVariant = (priority) => {
+    switch (priority.toLowerCase()) {
+      case 'high':
+        return 'destructive';
+      case 'medium':
+        return 'warning';
+      case 'low':
+        return 'secondary';
+      default:
+        return 'default';
     }
   };
 
@@ -302,9 +405,89 @@ return (
             Real-time insights, KPI tracking, and business intelligence for your compliance operations
           </p>
         </motion.div>
-
-        {/* KPI Summary Cards with Sparklines */}
+{/* KPI Summary Cards with Sparklines */}
         <StatsOverview kpiStats={kpiStats} />
+
+        {/* Quick Actions Grid */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {quickActions.map((action, index) => (
+              <motion.div
+                key={action.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`${action.color} ${action.hoverColor} rounded-xl p-6 text-white cursor-pointer transition-all duration-200 shadow-lg hover:shadow-xl`}
+                onClick={() => handleQuickAction(action.title)}
+              >
+                <div className="flex flex-col items-center space-y-3">
+                  <div className="p-3 bg-white/20 rounded-full">
+                    <ApperIcon name={action.icon} size={24} />
+                  </div>
+                  <span className="font-medium text-sm text-center">{action.title}</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Tasks & Calendar Widget */}
+        <div className="mb-8">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-gray-900">Tasks & Calendar</h2>
+                <ApperIcon name="Calendar" size={20} className="text-gray-500" />
+              </div>
+            </div>
+            <div className="p-6">
+              <h3 className="font-medium text-gray-900 mb-4">Upcoming Deadlines</h3>
+              <div className="space-y-4">
+                {upcomingTasks.map((task, index) => (
+                  <motion.div
+                    key={task.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="flex-shrink-0">
+                        <ApperIcon 
+                          name={task.priority === 'High' ? 'AlertTriangle' : task.priority === 'Medium' ? 'Clock' : 'CheckCircle2'} 
+                          size={16} 
+                          className={
+                            task.priority === 'High' ? 'text-red-500' : 
+                            task.priority === 'Medium' ? 'text-yellow-500' : 
+                            'text-green-500'
+                          }
+                        />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{task.title}</p>
+                        <p className="text-xs text-gray-500">
+                          Due {formatDistanceToNow(task.dueDate, { addSuffix: true })}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant={getPriorityBadgeVariant(task.priority)}>
+                      {task.priority}
+                    </Badge>
+                  </motion.div>
+                ))}
+              </div>
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <Button variant="outline" className="w-full">
+                  <ApperIcon name="Plus" size={16} className="mr-2" />
+                  Add New Task
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Main Analytics Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
