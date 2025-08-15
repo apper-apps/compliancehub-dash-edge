@@ -3,38 +3,38 @@ import { motion } from "framer-motion";
 import ApperIcon from "@/components/ApperIcon";
 
 const StatsOverview = ({ stats }) => {
-  const statCards = [
+const statCards = [
     {
-      title: "Total Requests",
-      value: stats?.totalRequests || 0,
-      icon: "FileText",
-      color: "blue",
-      trend: "+12%"
-    },
-    {
-      title: "Pending",
+      title: "Total Pending Requests",
       value: stats?.pendingRequests || 0,
       icon: "Clock",
       color: "yellow",
-      trend: "+8%"
+      trend: `${stats?.pendingRequests || 0} active`
     },
     {
-      title: "Completed",
+      title: "Completed Verifications",
       value: stats?.completedRequests || 0,
       icon: "CheckCircle",
       color: "green",
-      trend: "+15%"
+      trend: `${stats?.completedRequests || 0} verified`
+    },
+    {
+      title: "Average Processing Time",
+      value: `${stats?.averageProcessingTime || 0}d`,
+      icon: "Timer",
+      color: "blue",
+      trend: "days avg"
     },
     {
       title: "Active Services",
       value: stats?.activeServices || 0,
       icon: "Shield",
       color: "red",
-      trend: "100%"
+      trend: `${stats?.activeServices || 0} in use`
     }
   ];
 
-  const getColorClasses = (color) => {
+const getColorClasses = (color) => {
     const colors = {
       blue: "from-blue-500 to-blue-600 text-blue-600",
       yellow: "from-yellow-500 to-yellow-600 text-yellow-600",

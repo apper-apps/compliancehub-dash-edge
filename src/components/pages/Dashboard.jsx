@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import Layout from "@/components/organisms/Layout";
-import StatsOverview from "@/components/organisms/StatsOverview";
-import ServiceGrid from "@/components/organisms/ServiceGrid";
-import FilterPanel from "@/components/molecules/FilterPanel";
-import NewRequestModal from "@/components/organisms/NewRequestModal";
-import SearchBar from "@/components/molecules/SearchBar";
 import { servicesService } from "@/services/api/servicesService";
 import { toast } from "react-toastify";
+import StatsOverview from "@/components/organisms/StatsOverview";
+import NewRequestModal from "@/components/organisms/NewRequestModal";
+import ServiceGrid from "@/components/organisms/ServiceGrid";
+import Layout from "@/components/organisms/Layout";
+import FilterPanel from "@/components/molecules/FilterPanel";
+import SearchBar from "@/components/molecules/SearchBar";
 
 const Dashboard = () => {
   const [services, setServices] = useState([]);
@@ -23,12 +23,64 @@ const Dashboard = () => {
     dateRange: { start: "", end: "" }
   });
 
-  // Stats calculation
-  const stats = {
-    totalRequests: services.reduce((sum, service) => sum + Math.max(0, service.requestCount), 0),
-    pendingRequests: services.filter(service => service.requestCount > 0).length,
-    completedRequests: services.filter(service => service.requestCount === 0).length,
-    activeServices: services.length
+// Stats state
+  const [stats, setStats] = useState({
+    totalRequests: 0,
+    pendingRequests: 0,
+    completedRequests: 0,
+    averageProcessingTime: 0,
+    activeServices: 0
+  });
+
+  // Load stats data
+  const loadStats = async () => {
+    try {
+      // Import requestsService if not already imported
+      const { requestsService } = await import("@/services/api/requestsService");
+      
+      // Get real request data for KPI calculations
+      const requests = await requestsService.getAll();
+      
+      const pendingRequests = requests.filter(req => 
+        req.status === 'pending' || req.status === 'active'
+      ).length;
+      
+      const completedRequests = requests.filter(req => 
+        req.status === 'completed'
+      ).length;
+      
+      // Calculate average processing time for completed requests
+      const completedWithTimes = requests.filter(req => 
+        req.status === 'completed' && req.createdAt && req.completedAt
+      );
+      
+      let averageProcessingTime = 0;
+      if (completedWithTimes.length > 0) {
+        const totalProcessingTime = completedWithTimes.reduce((sum, req) => {
+          const created = new Date(req.createdAt);
+          const completed = new Date(req.completedAt);
+          return sum + (completed - created);
+        }, 0);
+        averageProcessingTime = Math.round(totalProcessingTime / completedWithTimes.length / (1000 * 60 * 60 * 24)); // Convert to days
+      }
+      
+      // Get services with active requests
+      const activeServiceIds = new Set(
+        requests.filter(req => req.status === 'pending' || req.status === 'active')
+          .map(req => req.serviceId)
+      );
+
+      setStats({
+        totalRequests: requests.length,
+        pendingRequests,
+        completedRequests,
+        averageProcessingTime,
+        activeServices: activeServiceIds.size
+      });
+    } catch (error) {
+      console.error("Error loading stats:", error);
+      // Keep default stats values on error
+    }
   };
 
   const loadServices = async () => {
@@ -46,8 +98,9 @@ const Dashboard = () => {
     }
   };
 
-  useEffect(() => {
+useEffect(() => {
     loadServices();
+    loadStats();
   }, []);
 
   useEffect(() => {
