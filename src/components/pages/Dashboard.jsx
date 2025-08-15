@@ -5,17 +5,19 @@ import { analyticsService } from "@/services/api/analyticsService";
 import { messagingService } from "@/services/api/messagingService";
 import { toast } from "react-toastify";
 import { formatDistanceToNow } from "date-fns";
-import StatsOverview from "@/components/organisms/StatsOverview";
+import ApperIcon from "@/components/ApperIcon";
 import AnalyticsCharts from "@/components/organisms/AnalyticsCharts";
-import MessagingPanel from "@/components/organisms/MessagingPanel";
+import StatsOverview from "@/components/organisms/StatsOverview";
 import NewRequestModal from "@/components/organisms/NewRequestModal";
 import ServiceGrid from "@/components/organisms/ServiceGrid";
 import Layout from "@/components/organisms/Layout";
+import MessagingPanel from "@/components/organisms/MessagingPanel";
 import FilterPanel from "@/components/molecules/FilterPanel";
 import SearchBar from "@/components/molecules/SearchBar";
-import ApperIcon from "@/components/ApperIcon";
-import Badge from "@/components/atoms/Badge";
 import Button from "@/components/atoms/Button";
+import Badge from "@/components/atoms/Badge";
+import ServiceCard from "@/components/molecules/ServiceCard";
+const Dashboard = () => {
 const Dashboard = () => {
 const [services, setServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
@@ -24,6 +26,7 @@ const [services, setServices] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
   const [isNewRequestModalOpen, setIsNewRequestModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [favorites, setFavorites] = useState([]);
   const [filters, setFilters] = useState({
     category: "All",
     status: "all",
@@ -303,12 +306,13 @@ const loadKpiStats = async () => {
     }
   };
 
-  useEffect(() => {
+useEffect(() => {
     loadServices();
     loadStats();
     loadKpiStats();
     loadAnalyticsData();
     loadMessagingData();
+    loadFavorites();
   }, []);
 
   // Real-time updates for messaging (simulate every 30 seconds)
@@ -320,6 +324,44 @@ const loadKpiStats = async () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Load favorites from localStorage
+  const loadFavorites = () => {
+    try {
+      const savedFavorites = localStorage.getItem('favoriteServices');
+      if (savedFavorites) {
+        setFavorites(JSON.parse(savedFavorites));
+      }
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+    }
+  };
+
+  // Save favorites to localStorage
+  const saveFavorites = (newFavorites) => {
+    try {
+      localStorage.setItem('favoriteServices', JSON.stringify(newFavorites));
+      setFavorites(newFavorites);
+    } catch (error) {
+      console.error('Error saving favorites:', error);
+      toast.error('Failed to save favorites');
+    }
+  };
+
+  // Toggle favorite status
+  const handleToggleFavorite = (service) => {
+    const isFavorite = favorites.includes(service.Id);
+    let newFavorites;
+    
+    if (isFavorite) {
+      newFavorites = favorites.filter(id => id !== service.Id);
+      toast.success(`Removed ${service.name} from favorites`);
+    } else {
+      newFavorites = [...favorites, service.Id];
+      toast.success(`Added ${service.name} to favorites`);
+    }
+    
+    saveFavorites(newFavorites);
+  };
   useEffect(() => {
     let filtered = [...services];
 
@@ -377,8 +419,7 @@ const loadKpiStats = async () => {
       console.error("Error submitting request:", error);
     }
   };
-
-  const handleClearFilters = () => {
+const handleClearFilters = () => {
     setFilters({
       category: "All",
       status: "all",
@@ -387,8 +428,11 @@ const loadKpiStats = async () => {
     setSearchTerm("");
   };
 
-  const totalPendingRequests = stats.totalRequests;
+  // Get favorite services
+  const favoriteServices = services.filter(service => favorites.includes(service.Id));
+const favoriteServices = services.filter(service => favorites.includes(service.Id));
 
+const totalPendingRequests = stats.totalRequests;
 return (
     <Layout onSearch={setSearchTerm} totalPendingRequests={totalPendingRequests}>
       <div className="space-y-8">
@@ -409,7 +453,7 @@ return (
         <StatsOverview kpiStats={kpiStats} />
 
         {/* Quick Actions Grid */}
-        <div className="mb-8">
+<div className="mb-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {quickActions.map((action, index) => (
@@ -433,6 +477,37 @@ return (
             ))}
           </div>
         </div>
+
+        {/* Frequently Accessed Services */}
+        {favoriteServices.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-gray-900">Frequently Accessed Services</h2>
+              <div className="flex items-center text-sm text-gray-500">
+                <ApperIcon name="Star" size={16} className="mr-1 fill-current text-yellow-500" />
+                {favoriteServices.length} saved
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {favoriteServices.map((service, index) => (
+                <motion.div
+                  key={service.Id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <ServiceCard
+                    service={service}
+                    onNewRequest={handleNewRequest}
+                    onViewDetails={handleViewDetails}
+                    onToggleFavorite={handleToggleFavorite}
+                    isFavorite={true}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Tasks & Calendar Widget */}
         <div className="mb-8">

@@ -9,6 +9,7 @@ const Services = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [favorites, setFavorites] = useState([]);
 
   const loadServices = async () => {
     try {
@@ -24,8 +25,48 @@ const Services = () => {
     }
   };
 
+  // Load favorites from localStorage
+  const loadFavorites = () => {
+    try {
+      const savedFavorites = localStorage.getItem('favoriteServices');
+      if (savedFavorites) {
+        setFavorites(JSON.parse(savedFavorites));
+      }
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+    }
+  };
+
+  // Save favorites to localStorage
+  const saveFavorites = (newFavorites) => {
+    try {
+      localStorage.setItem('favoriteServices', JSON.stringify(newFavorites));
+      setFavorites(newFavorites);
+    } catch (error) {
+      console.error('Error saving favorites:', error);
+      toast.error('Failed to save favorites');
+    }
+  };
+
+  // Toggle favorite status
+  const handleToggleFavorite = (service) => {
+    const isFavorite = favorites.includes(service.Id);
+    let newFavorites;
+    
+    if (isFavorite) {
+      newFavorites = favorites.filter(id => id !== service.Id);
+      toast.success(`Removed ${service.name} from favorites`);
+    } else {
+      newFavorites = [...favorites, service.Id];
+      toast.success(`Added ${service.name} to favorites`);
+    }
+    
+    saveFavorites(newFavorites);
+  };
+
   useEffect(() => {
     loadServices();
+    loadFavorites();
   }, []);
 
   const handleNewRequest = (service) => {
@@ -58,6 +99,8 @@ const Services = () => {
           error={error}
           onNewRequest={handleNewRequest}
           onViewDetails={handleViewDetails}
+          onToggleFavorite={handleToggleFavorite}
+          favorites={favorites}
           onRetry={loadServices}
         />
       </div>

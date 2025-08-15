@@ -34,12 +34,20 @@ export const servicesService = {
     return { ...servicesData[index] };
   },
 
-  async delete(id) {
+async delete(id) {
     await new Promise(resolve => setTimeout(resolve, DELAY_MS));
     const index = servicesData.findIndex(item => item.Id === parseInt(id));
     if (index === -1) return false;
     
     servicesData.splice(index, 1);
     return true;
+  },
+
+  // Toggle favorite status (for future API integration)
+  async toggleFavorite(id, isFavorite) {
+    await new Promise(resolve => setTimeout(resolve, DELAY_MS));
+    // This would typically update the service's favorite status in the backend
+    // For now, we handle favorites in localStorage on the client side
+    return { success: true, id: parseInt(id), isFavorite };
   }
 };

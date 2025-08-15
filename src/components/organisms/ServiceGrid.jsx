@@ -11,6 +11,8 @@ const ServiceGrid = ({
   error, 
   onNewRequest, 
   onViewDetails, 
+  onToggleFavorite,
+  favorites = [],
   onRetry 
 }) => {
   if (loading) {
@@ -41,10 +43,12 @@ const ServiceGrid = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: index * 0.05 }}
         >
-          <ServiceCard
+<ServiceCard
             service={service}
             onNewRequest={onNewRequest}
             onViewDetails={onViewDetails}
+            onToggleFavorite={onToggleFavorite}
+            isFavorite={favorites.includes(service.Id)}
           />
         </motion.div>
       ))}
