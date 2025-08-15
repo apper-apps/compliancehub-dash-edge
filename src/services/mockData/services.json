@@ -1,0 +1,178 @@
+[
+  {
+    "Id": 1,
+    "id": "identity-verification",
+    "name": "Identity Verification",
+    "category": "Identity Verification",
+    "icon": "UserCheck",
+    "description": "Confirms an individual's identity using official documents and databases for comprehensive identity validation.",
+    "processingTime": "2-3 days",
+    "cost": 12.50,
+    "requestCount": 23
+  },
+  {
+    "Id": 2,
+    "id": "aml-peps-sanction-check",
+    "name": "AML, PEPs, and Sanction Check",
+    "category": "Financial Checks",
+    "icon": "AlertTriangle",
+    "description": "Comprehensive screening for Anti-Money Laundering risks, Politically Exposed Persons, and international sanctions lists.",
+    "processingTime": "1-2 days",
+    "cost": 8.75,
+    "requestCount": 45
+  },
+  {
+    "Id": 3,
+    "id": "basic-dbs",
+    "name": "Basic DBS",
+    "category": "Background Checks",
+    "icon": "FileCheck",
+    "description": "Basic level criminal record check through the Disclosure and Barring Service for unspent convictions.",
+    "processingTime": "3-5 days",
+    "cost": 18.00,
+    "requestCount": 12
+  },
+  {
+    "Id": 4,
+    "id": "standard-dbs",
+    "name": "Standard DBS",
+    "category": "Background Checks",
+    "icon": "File",
+    "description": "Standard level criminal record check including spent and unspent convictions, cautions, reprimands and warnings.",
+    "processingTime": "5-7 days",
+    "cost": 26.00,
+    "requestCount": 8
+  },
+  {
+    "Id": 5,
+    "id": "enhanced-dbs",
+    "name": "Enhanced DBS",
+    "category": "Background Checks",
+    "icon": "ShieldCheck",
+    "description": "Enhanced criminal background check including local police records and barred lists information.",
+    "processingTime": "7-10 days",
+    "cost": 40.00,
+    "requestCount": 6
+  },
+  {
+    "Id": 6,
+    "id": "right-to-work-check",
+    "name": "Right To Work Check",
+    "category": "Regulatory Checks",
+    "icon": "Briefcase",
+    "description": "Verifies if a person is legally allowed to work in the UK through document verification and database checks.",
+    "processingTime": "1-2 days",
+    "cost": 15.00,
+    "requestCount": 165
+  },
+  {
+    "Id": 7,
+    "id": "dvla-check",
+    "name": "DVLA Check",
+    "category": "Regulatory Checks",
+    "icon": "Car",
+    "description": "Comprehensive driver license verification through the Driver and Vehicle Licensing Agency database.",
+    "processingTime": "2-3 days",
+    "cost": 22.50,
+    "requestCount": 31
+  },
+  {
+    "Id": 8,
+    "id": "tax-defaulters-check",
+    "name": "Tax Defaulters Check",
+    "category": "Financial Checks",
+    "icon": "Receipt",
+    "description": "Verifies if a person or company is listed as a tax defaulter in official government databases.",
+    "processingTime": "3-4 days",
+    "cost": 17.25,
+    "requestCount": 7
+  },
+  {
+    "Id": 9,
+    "id": "adverse-credit-check",
+    "name": "Adverse Credit Check",
+    "category": "Financial Checks",
+    "icon": "CreditCard",
+    "description": "Comprehensive financial background assessment for defaults, CCJs, bankruptcy, and credit history analysis.",
+    "processingTime": "1-3 days",
+    "cost": 19.50,
+    "requestCount": -3
+  },
+  {
+    "Id": 10,
+    "id": "director-search",
+    "name": "Director Search",
+    "category": "Regulatory Checks",
+    "icon": "Users",
+    "description": "Comprehensive search for registered company directors in corporate databases and Companies House records.",
+    "processingTime": "2-4 days",
+    "cost": 14.75,
+    "requestCount": 18
+  },
+  {
+    "Id": 11,
+    "id": "scotland-standard-disclosure",
+    "name": "Scotland Standard Disclosure",
+    "category": "Background Checks",
+    "icon": "FileText",
+    "description": "Criminal record check specifically for Scotland-based cases through Disclosure Scotland services.",
+    "processingTime": "5-8 days",
+    "cost": 25.00,
+    "requestCount": 4
+  },
+  {
+    "Id": 12,
+    "id": "fca-firm-check",
+    "name": "FCA Firm Check",
+    "category": "Regulatory Checks",
+    "icon": "Building",
+    "description": "Verification of company registration and regulation status with the Financial Conduct Authority.",
+    "processingTime": "1-2 days",
+    "cost": 16.50,
+    "requestCount": 0
+  },
+  {
+    "Id": 13,
+    "id": "knowledge-centre",
+    "name": "Knowledge Centre",
+    "category": "Document Services",
+    "icon": "BookOpen",
+    "description": "Comprehensive resource hub providing compliance guides, regulatory updates, FAQs, and best practices.",
+    "processingTime": "Instant",
+    "cost": 0.00,
+    "requestCount": 0
+  },
+  {
+    "Id": 14,
+    "id": "right-to-work-request",
+    "name": "Right To Work Request",
+    "category": "Document Services",
+    "icon": "Send",
+    "description": "Automated request tool to initiate right-to-work verification processes with candidates.",
+    "processingTime": "Instant",
+    "cost": 5.00,
+    "requestCount": 89
+  },
+  {
+    "Id": 15,
+    "id": "document-request",
+    "name": "Document Request",
+    "category": "Document Services",
+    "icon": "Upload",
+    "description": "Secure document collection tool for requesting official documents from clients and candidates.",
+    "processingTime": "Instant",
+    "cost": 3.00,
+    "requestCount": 52
+  },
+  {
+    "Id": 16,
+    "id": "aml-monitoring",
+    "name": "AML Monitoring",
+    "category": "Financial Checks",
+    "icon": "Eye",
+    "description": "Ongoing continuous monitoring service for Anti-Money Laundering compliance and risk assessment.",
+    "processingTime": "Ongoing",
+    "cost": 35.00,
+    "requestCount": 28
+  }
+]
