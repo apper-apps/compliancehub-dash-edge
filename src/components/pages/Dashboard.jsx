@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { servicesService } from "@/services/api/servicesService";
+import { analyticsService } from "@/services/api/analyticsService";
+import { messagingService } from "@/services/api/messagingService";
 import { toast } from "react-toastify";
 import StatsOverview from "@/components/organisms/StatsOverview";
+import AnalyticsCharts from "@/components/organisms/AnalyticsCharts";
+import MessagingPanel from "@/components/organisms/MessagingPanel";
 import NewRequestModal from "@/components/organisms/NewRequestModal";
 import ServiceGrid from "@/components/organisms/ServiceGrid";
 import Layout from "@/components/organisms/Layout";
 import FilterPanel from "@/components/molecules/FilterPanel";
 import SearchBar from "@/components/molecules/SearchBar";
-
 const Dashboard = () => {
-  const [services, setServices] = useState([]);
+const [services, setServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,7 +26,31 @@ const Dashboard = () => {
     dateRange: { start: "", end: "" }
   });
 
-// Stats state
+  // KPI Stats with sparklines
+  const [kpiStats, setKpiStats] = useState({
+    users: { value: 0, trend: [], change: 0 },
+    sales: { value: 0, trend: [], change: 0 },
+    revenue: { value: 0, trend: [], change: 0 },
+    bounceRate: { value: 0, trend: [], change: 0 }
+  });
+
+  // Analytics data
+  const [analyticsData, setAnalyticsData] = useState({
+    salesTrend: [],
+    revenueByCategory: [],
+    conversionFunnel: [],
+    loading: true
+  });
+
+  // Messaging data
+  const [messaging, setMessaging] = useState({
+    messages: [],
+    onlineUsers: [],
+    unreadCount: 0,
+    loading: true
+  });
+
+  // Legacy stats for compatibility
   const [stats, setStats] = useState({
     totalRequests: 0,
     pendingRequests: 0,
@@ -31,8 +58,62 @@ const Dashboard = () => {
     averageProcessingTime: 0,
     activeServices: 0
   });
-
   // Load stats data
+const loadKpiStats = async () => {
+    try {
+      const data = await analyticsService.getKpiStats();
+      setKpiStats(data);
+    } catch (error) {
+      console.error("Error loading KPI stats:", error);
+      toast.error("Failed to load KPI statistics");
+    }
+  };
+
+  const loadAnalyticsData = async () => {
+    try {
+      setAnalyticsData(prev => ({ ...prev, loading: true }));
+      const [salesTrend, revenueByCategory, conversionFunnel] = await Promise.all([
+        analyticsService.getSalesTrend(),
+        analyticsService.getRevenueByCategory(),
+        analyticsService.getConversionFunnel()
+      ]);
+      
+      setAnalyticsData({
+        salesTrend,
+        revenueByCategory,
+        conversionFunnel,
+        loading: false
+      });
+    } catch (error) {
+      console.error("Error loading analytics data:", error);
+      setAnalyticsData(prev => ({ ...prev, loading: false }));
+      toast.error("Failed to load analytics data");
+    }
+  };
+
+  const loadMessagingData = async () => {
+    try {
+      setMessaging(prev => ({ ...prev, loading: true }));
+      const [messages, onlineUsers] = await Promise.all([
+        messagingService.getRecentMessages(),
+        messagingService.getOnlineUsers()
+      ]);
+      
+      const unreadCount = messages.filter(msg => !msg.isRead && msg.senderId !== 'current-user').length;
+      
+      setMessaging({
+        messages,
+        onlineUsers,
+        unreadCount,
+        loading: false
+      });
+    } catch (error) {
+      console.error("Error loading messaging data:", error);
+      setMessaging(prev => ({ ...prev, loading: false }));
+      toast.error("Failed to load messaging data");
+    }
+  };
+
   const loadStats = async () => {
     try {
       // Import requestsService if not already imported
@@ -98,9 +179,42 @@ const Dashboard = () => {
     }
   };
 
-useEffect(() => {
+  const sendMessage = async (messageText) => {
+    try {
+      const newMessage = await messagingService.sendMessage({
+        text: messageText,
+        senderId: 'current-user',
+        senderName: 'You',
+        timestamp: new Date().toISOString()
+      });
+      
+      setMessaging(prev => ({
+        ...prev,
+        messages: [newMessage, ...prev.messages]
+      }));
+      
+      toast.success("Message sent successfully");
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Failed to send message");
+    }
+  };
+
+  useEffect(() => {
     loadServices();
     loadStats();
+    loadKpiStats();
+    loadAnalyticsData();
+    loadMessagingData();
+  }, []);
+
+  // Real-time updates for messaging (simulate every 30 seconds)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadMessagingData();
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -172,7 +286,7 @@ useEffect(() => {
 
   const totalPendingRequests = stats.totalRequests;
 
-  return (
+return (
     <Layout onSearch={setSearchTerm} totalPendingRequests={totalPendingRequests}>
       <div className="space-y-8">
         {/* Page Header */}
@@ -182,45 +296,99 @@ useEffect(() => {
           transition={{ duration: 0.3 }}
         >
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Verification Dashboard
+            Analytics Dashboard
           </h1>
           <p className="text-gray-600">
-            Manage your compliance and verification requests from one central location
+            Real-time insights, KPI tracking, and business intelligence for your compliance operations
           </p>
         </motion.div>
 
-        {/* Stats Overview */}
-        <StatsOverview stats={stats} />
+        {/* KPI Summary Cards with Sparklines */}
+        <StatsOverview kpiStats={kpiStats} />
 
-        {/* Mobile Search */}
-        <div className="md:hidden">
-          <SearchBar
-            value={searchTerm}
-            onChange={setSearchTerm}
-            placeholder="Search services..."
-          />
-        </div>
-
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Filters Sidebar */}
-          <div className="lg:col-span-1">
-            <FilterPanel
-              filters={filters}
-              onFilterChange={setFilters}
-              onClearFilters={handleClearFilters}
+        {/* Main Analytics Grid */}
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+          {/* Charts Section */}
+          <div className="xl:col-span-3 space-y-8">
+            {/* Analytics Charts */}
+            <AnalyticsCharts 
+              data={analyticsData}
+              loading={analyticsData.loading}
             />
+
+            {/* Mobile Search */}
+            <div className="md:hidden">
+              <SearchBar
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder="Search services..."
+              />
+            </div>
+
+            {/* Services Section - Condensed */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+              className="bg-white rounded-lg border border-gray-200 p-6"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">Quick Service Access</h2>
+                <div className="flex items-center space-x-4">
+                  <div className="hidden md:block">
+                    <SearchBar
+                      value={searchTerm}
+                      onChange={setSearchTerm}
+                      placeholder="Search services..."
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Filter Panel - Horizontal */}
+                <div className="lg:col-span-1">
+                  <FilterPanel
+                    filters={filters}
+                    onFilterChange={setFilters}
+                    onClearFilters={handleClearFilters}
+                  />
+                </div>
+
+                {/* Services Grid - Compact */}
+                <div className="lg:col-span-2">
+                  <ServiceGrid
+                    services={filteredServices.slice(0, 4)}
+                    loading={loading}
+                    error={error}
+                    onNewRequest={handleNewRequest}
+                    onViewDetails={handleViewDetails}
+                    onRetry={loadServices}
+                    compact={true}
+                  />
+                  {filteredServices.length > 4 && (
+                    <div className="mt-4 text-center">
+                      <button 
+                        onClick={() => window.location.href = '/services'}
+                        className="text-blue-600 hover:text-blue-800 font-medium"
+                      >
+                        View all {filteredServices.length} services →
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
           </div>
 
-          {/* Services Grid */}
-          <div className="lg:col-span-3">
-            <ServiceGrid
-              services={filteredServices}
-              loading={loading}
-              error={error}
-              onNewRequest={handleNewRequest}
-              onViewDetails={handleViewDetails}
-              onRetry={loadServices}
+          {/* Messaging Panel */}
+          <div className="xl:col-span-1">
+            <MessagingPanel
+              messages={messaging.messages}
+              onlineUsers={messaging.onlineUsers}
+              unreadCount={messaging.unreadCount}
+              loading={messaging.loading}
+              onSendMessage={sendMessage}
             />
           </div>
         </div>
